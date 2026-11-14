@@ -1,17 +1,27 @@
-# SmartPillBox
+# Smart Pill Box + Fall Detection
 
-IoT medication dispenser and fall detection system for elderly care.
+IoT medication reminder and fall detection system for elderly care.
 
-A smart pill-box gateway rotates the correct medication compartment at the scheduled time and verifies pill intake. A wristband sensor node monitors heart rate and detects falls with on-device TinyML. Family caregivers are notified via LINE when a dose is missed or a fall is detected.
+A pill-box gateway reminds the user at the scheduled time, detects whether the pill was taken, and sends alerts to family caregivers via LINE. A wristband sensor node monitors heart rate and detects falls with on-device TinyML. Data is synced to NETPIE2020 and shown on a dashboard.
+
+## How It Works
+
+```
+Wristband (sensor node) ──ESP-NOW──► Pill box (gateway) ──MQTT──► NETPIE2020 ──► Dashboard
+                                            └──HTTPS──► LINE ──► Caregiver's phone
+```
 
 ## Repository Structure
 
 ```
-smartpillbox/
-├── node/        # เฟิร์มแวร์สายรัดข้อมือ (Sky)
-├── gateway/     # เฟิร์มแวร์กล่องยา + cloud sync (Ice)
-├── dashboard/   # หน้า Dashboard (Ohm)
-├── docs/        # interface spec, block diagram, รายงาน (Kanit)
+smart-pillbox/
+├── libraries/              Shared code used by both boards (protocol, ESP-NOW link, store-and-forward)
+├── 1-system-architect/     Docs: message format, NETPIE schema, state diagrams, decisions
+├── 2-sensor-node/          Wristband firmware (XIAO ESP32-C3) + ML dataset + PM notes
+├── 3-gateway-cloud/        Pill box firmware (ESP32 DevKit) + cloud sync
+├── 4-dashboard-testing/    NETPIE dashboard setup + test plan and results
+├── system-flow.md          Overall system flow
+├── .github/CODEOWNERS     Review ownership per folder
 ├── .gitignore
 └── README.md
 ```
@@ -20,13 +30,26 @@ smartpillbox/
 
 | Folder | Owner | Role |
 |---|---|---|
-| `node/` | Sky | Embedded Dev (Sensor Node) |
-| `gateway/` | Ice | Embedded Dev (Gateway & Cloud) |
-| `dashboard/` | Ohm | UI/UX & Dashboard + Project Manager & Test Lead |
-| `docs/` | Kanit | System Architect & Integration |
+| `libraries/`, `1-system-architect/` | Kanit | System Architect & Integration |
+| `2-sensor-node/` | Chawiss | Embedded Dev (Sensor Node), PM |
+| `3-gateway-cloud/` | Pasit | Embedded Dev (Gateway & Cloud) |
+| `4-dashboard-testing/` | Pakorn | Dashboard UI/UX, Test Lead |
+
+## Setup (Arduino IDE)
+
+1. Clone the repository.
+2. Set **File → Preferences → Sketchbook location** to the repo folder and restart the IDE, so it can see `libraries/`.
+3. Install **esp32 by Espressif Systems** from Boards Manager.
+4. Install the libraries listed for your part from Library Manager.
+5. Open your sketch:
+   - Sensor node: `2-sensor-node/sensor_node/sensor_node.ino`, board **XIAO_ESP32C3**
+   - Gateway: `3-gateway-cloud/gateway/gateway.ino`, board **ESP32 Dev Module**
+6. Gateway only: copy `secrets.example.h` to `secrets.h` and fill in your own values. Never commit `secrets.h`.
 
 ## Workflow
 
-- สร้าง Branch ใหม่เวลาจะทำ Feature
+- Create a branch per part, for example `sensor/imu`, `gateway/pill-schedule`, `arch/protocol`.
+- Edit only your own folder. For changes elsewhere, open a Pull Request.
+- Changes under `libraries/` must be reviewed by the System Architect. Do not copy `protocol.h` into your own sketch.
 - Commit with your own GitHub account.
-- Do not commit build output (`.pio/`, `build/`).
+- Do not commit build output (`.pio/`, `build/`, `*.bin`, `*.elf`) or `secrets.h`.

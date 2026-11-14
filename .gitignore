@@ -1,0 +1,15 @@
+# libraries/ เก็บเฉพาะ lib ของทีม — lib ที่ลงจาก Library Manager ไม่ขึ้น git
+libraries/*
+!libraries/protocol/
+!libraries/espnow_link/
+!libraries/store_forward/
+# secrets
+**/secrets.h
+# build
+build/
+*.bin
+*.elf
+.DS_Store
+
+# PlatformIO build output
+.pio/
