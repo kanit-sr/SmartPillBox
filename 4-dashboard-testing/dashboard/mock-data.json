@@ -1,1 +1,42 @@
-{}
+{
+  "_note": "ข้อมูลจำลองสำหรับทดสอบ",
+  "shadow_update": {
+    "data": {
+      "hr": 78,
+      "spo2": 97,
+      "batt": 64,
+      "node_online": true,
+      "node_last_seen": 1763170980,
+      "temp": 29.5,
+      "hum": 62,
+      "lid_open": false,
+      "person": true,
+      "box_state": "idle",
+      "next_pill": "12:00",
+      "last_pill_taken": 1763168400,
+      "queue": 0,
+      "schedule": ["08:00", "12:00", "19:00"]
+    }
+  },
+  "events": [
+    {
+      "ev": "fall_confirmed",
+      "ts": 1763170980,
+      "id": 42,
+      "d": {
+        "hr": 110,
+        "spo2": 95,
+        "conf": 91
+      }
+    },
+    {
+      "ev": "fall_acknowledged",
+      "ts": 1763171040,
+      "id": 43,
+      "d": {
+        "by": "dashboard",
+        "after_s": 60
+      }
+    }
+  ]
+}
