@@ -110,7 +110,7 @@ stateDiagram-v2
 | กำไลขาดการติดต่อระหว่าง alarm | alarm ยังอยู่ ส่ง `node_offline` ตามปกติ |
 | ถึงเวลายาตอนเน็ตหลุด | ใช้ schedule ล่าสุดที่จำไว้ในกล่อง ถ้าเปิดเครื่องแล้วยังไม่เคยได้เวลา NTP ยังเตือนยาไม่ได้ |
 
-### 4. สถานะกำไล (ฝั่งกล่องคำนวณ, เป็น flag ไม่ใช่ state หลัก)
+### 4. สถานะกำไล (ฝั่งกล่องคำนวณแยกต่อ `node_id`, เป็น flag ไม่ใช่ state หลัก)
 
 ```mermaid
 stateDiagram-v2
@@ -122,5 +122,5 @@ stateDiagram-v2
 ```
 
 - packet ทุกชนิดจากกำไลนับเป็น "เห็น" (อัปเดต `node_last_seen`) ไม่ใช่แค่ STATUS
-- `node_online` ใน shadow = ONLINE เท่านั้น
+- `node_online_<n>` ใน shadow = ONLINE เท่านั้น
 - `low_battery` ส่งครั้งเดียวเมื่อ `batt_pct` < `LOW_BATT_PERCENT` และส่งได้อีกครั้งหลังแบตกลับมา ≥ `LOW_BATT_PERCENT`

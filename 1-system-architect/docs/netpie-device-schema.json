@@ -1,0 +1,134 @@
+{
+  "additionalProperties": true,
+  "properties": {
+    "hr_1": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 255,
+      "operation": {
+        "store": {
+          "ttl": "30d"
+        }
+      }
+    },
+    "spo2_1": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "operation": {
+        "store": {
+          "ttl": "30d"
+        }
+      }
+    },
+    "batt_1": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "operation": {
+        "store": {
+          "ttl": "30d"
+        }
+      }
+    },
+    "node_online_1": {
+      "type": "boolean"
+    },
+    "node_last_seen_1": {
+      "type": "number"
+    },
+    "hr_2": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 255
+    },
+    "spo2_2": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "batt_2": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "node_online_2": {
+      "type": "boolean"
+    },
+    "node_last_seen_2": {
+      "type": "number"
+    },
+    "hr_3": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 255
+    },
+    "spo2_3": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "batt_3": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "node_online_3": {
+      "type": "boolean"
+    },
+    "node_last_seen_3": {
+      "type": "number"
+    },
+    "nodes": {
+      "type": "array"
+    },
+    "temp": {
+      "type": "number",
+      "operation": {
+        "store": {
+          "ttl": "30d"
+        }
+      }
+    },
+    "hum": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "operation": {
+        "store": {
+          "ttl": "30d"
+        }
+      }
+    },
+    "lid_open": {
+      "type": "boolean"
+    },
+    "person": {
+      "type": "boolean"
+    },
+    "box_state": {
+      "type": "string",
+      "default": "idle"
+    },
+    "alarm_node": {
+      "type": "number",
+      "default": 0
+    },
+    "next_pill": {
+      "type": "string"
+    },
+    "last_pill_taken": {
+      "type": "number"
+    },
+    "queue": {
+      "type": "number",
+      "default": 0
+    },
+    "schedule": {
+      "type": "array"
+    },
+    "last_event": {
+      "type": "object"
+    }
+  }
+}
