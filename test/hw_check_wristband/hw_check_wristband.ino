@@ -78,6 +78,21 @@ void setup() {
 }
 
 void loop() {
+  // ยังไม่เจอเซนเซอร์: สแกนซ้ำทุก 1 วิ ให้ขยับ/กดสายแล้วดูผลสดได้
+  if (!mpuOk || !maxOk) {
+    static unsigned long lastScan = 0;
+    if (millis() - lastScan < 1000) return;
+    lastScan = millis();
+    i2cScan(PIN_SDA, PIN_SCL, "rescan");
+    if (!mpuOk) mpuOk = mpuBegin();
+    if (!maxOk && (maxOk = pulse.begin(Wire, I2C_SPEED_FAST))) {
+      pulse.setup();
+      pulse.setPulseAmplitudeRed(0x0A);
+    }
+    if (mpuOk && maxOk) Serial.println("== เจอครบทั้งสองตัวแล้ว ==");
+    return;
+  }
+
   // MAX30102 ต้องอ่านถี่ๆ ถึงจะจับจังหวะหัวใจได้
   long ir = 0, red = 0;
   if (maxOk) {

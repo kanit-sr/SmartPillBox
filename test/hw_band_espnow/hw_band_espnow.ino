@@ -1,5 +1,8 @@
 // เดโมกำไล (XIAO ESP32-C3) ส่งค่าเซนเซอร์จริงผ่าน ESP-NOW ไปกล่อง (คู่กับ test/hw_netpie_box)
 // MOTION (MPU6050) ทุก 0.5 วิ, STATUS (MAX30102) ทุก 5 วิ, ได้ CMD_PILL_REMIND = มอเตอร์สั่น
+// MOCK_SENSORS 1 = ไม่อ่านเซนเซอร์ ส่งชีพจร/acc จำลองแทน (เทสเส้นทาง กำไล→กล่อง→NETPIE)
+#define MOCK_SENSORS 1
+
 #include <WiFi.h>
 #include <Wire.h>
 #include "MAX30105.h"
@@ -45,6 +48,10 @@ void vibrate(int ms) {
 void setup() {
   Serial.begin(115200);
   pinMode(PIN_MOTOR, OUTPUT);
+#if MOCK_SENSORS
+  mpuOk = true;
+  Serial.println("MOCK_SENSORS: ส่งค่าจำลอง ไม่อ่านเซนเซอร์จริง");
+#else
   Wire.begin(PIN_SDA, PIN_SCL);
   mpuOk = mpuBegin();
   maxOk = pulse.begin(Wire, I2C_SPEED_FAST);
@@ -53,6 +60,7 @@ void setup() {
     pulse.setPulseAmplitudeRed(0x0A);
   }
   Serial.printf("MPU6050 %s, MAX30102 %s\n", mpuOk ? "OK" : "NOT FOUND", maxOk ? "OK" : "NOT FOUND");
+#endif
 
   WiFi.mode(WIFI_STA);
   if (!linkBegin(BOX_MAC)) Serial.println("ESP-NOW init failed");
@@ -74,7 +82,18 @@ void loop() {
   if (mpuOk && millis() - lastMotion >= 500) {
     lastMotion = millis();
     int16_t v[7];
+#if MOCK_SENSORS
+    // แกว่งแขนช้าๆ: acc หมุนรอบแกน X, gyro ตามความเร็ว
+    float t = millis() / 1000.0;
+    v[0] = 16384 * 0.2 * sin(t);
+    v[1] = 16384 * 0.3 * cos(t);
+    v[2] = 16384 * 0.95;
+    v[4] = 131 * 20 * cos(t);
+    v[5] = 131 * -15 * sin(t);
+    v[6] = 131 * 5;
+#else
     mpuRead(v);
+#endif
     MotionPacket m;
     m.ax = (int32_t)v[0] * 1000 / 16384;
     m.ay = (int32_t)v[1] * 1000 / 16384;
@@ -93,6 +112,9 @@ void loop() {
     bool finger = lastIr > 50000;
     StatusPacket p;
     p.hr = finger ? (uint8_t)bpm : 0;
+#if MOCK_SENSORS
+    p.hr = 72 + random(0, 9);
+#endif
     p.spo2 = 0;  // ยังไม่ได้คำนวณ SpO2 ในเดโมนี้
     p.batt_pct = 100;
     p.batt_mv = 0;
