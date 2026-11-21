@@ -43,6 +43,7 @@
 | FALL_CANCELLED | 3 | กดยกเลิกระหว่างนับถอยหลัง | retry สูงสุด 5 ครั้ง |
 | SOS | 4 | กดค้าง 3 วิ | ส่งซ้ำจนกว่าจะได้ ACK |
 | POWER_OFF | 5 | กดค้าง 10 วิ | retry สูงสุด 5 ครั้ง แล้วเข้า deep sleep เลย |
+| MOTION | 6 | เดโม/ดีบักเท่านั้น (ค่าดิบ MPU6050) | ส่งครั้งเดียว ไม่ retry |
 | ACK | 10 | กล่อง → กำไล | — |
 
 ### Payload
@@ -62,8 +63,10 @@
 | | `age_ms` | uint32 | |
 | SOS | `hr`, `spo2`, `age_ms`, `batt_pct` | | เหมือน FALL_CONFIRMED แต่ไม่มี `conf` |
 | POWER_OFF | `batt_pct` | uint8 | กล่องจะไม่แจ้ง "ขาดการติดต่อ" หลังได้ packet นี้ |
+| MOTION | `ax`, `ay`, `az` | int16 ×3 | ความเร่ง mg (1000 = 1g) |
+| | `gx`, `gy`, `gz` | int16 ×3 | การหมุน deg/s |
 
-ขนาดใหญ่สุดประมาณ 13 bytes (ESP-NOW รับได้ 250)
+ขนาดใหญ่สุดประมาณ 16 bytes (MOTION) (ESP-NOW รับได้ 250)
 
 ---
 

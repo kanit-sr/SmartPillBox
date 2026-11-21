@@ -14,6 +14,7 @@ enum MsgType : uint8_t {
   FALL_CANCELLED = 3,   // กดยกเลิกระหว่างนับถอยหลัง, retry สูงสุด 5 ครั้ง
   SOS            = 4,   // กดค้าง 3 วิ, ส่งซ้ำจนกว่าจะได้ ACK
   POWER_OFF      = 5,   // กดค้าง 10 วิ, retry สูงสุด 5 ครั้งแล้ว deep sleep
+  MOTION         = 6,   // ค่าดิบ MPU6050 สำหรับเดโม/ดีบัก ส่งครั้งเดียว ไม่ต้อง retry
   ACK            = 10   // กล่อง → กำไล
 };
 
@@ -81,6 +82,12 @@ struct __attribute__((packed)) PowerOffPacket {
   uint8_t  batt_pct;
 };
 
+struct __attribute__((packed)) MotionPacket {
+  PacketHeader hdr;
+  int16_t  ax, ay, az;  // ความเร่ง หน่วย mg (1000 = 1g)
+  int16_t  gx, gy, gz;  // การหมุน หน่วย deg/s
+};
+
 struct __attribute__((packed)) AckPacket {
   PacketHeader hdr;   // type = ACK, seq = ของกล่องเอง
   uint16_t ack_seq;   // seq ของ packet ที่ตอบ
@@ -95,4 +102,5 @@ static_assert(sizeof(FallConfirmedPacket) == 12, "FALL_CONFIRMED size");
 static_assert(sizeof(FallCancelledPacket) == 9, "FALL_CANCELLED size");
 static_assert(sizeof(SosPacket) == 11, "SOS size");
 static_assert(sizeof(PowerOffPacket) == 5, "POWER_OFF size");
+static_assert(sizeof(MotionPacket) == 16, "MOTION size");
 static_assert(sizeof(AckPacket) == 8, "ACK size");
