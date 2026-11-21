@@ -24,6 +24,10 @@
 | `last_pill_taken` | int (epoch) | | |
 | `queue` | int | store_forward | จำนวน event ที่ค้างส่ง (โชว์ตอนเดโม E4) |
 | `schedule` | array | **dashboard เขียน** | ["08:00","12:00","19:00"] |
+| `last_ev` | string | `netpie.cpp` ใส่ให้เอง **(เพิ่มใหม่)** | "fall_confirmed" — event ล่าสุด เพราะ `@msg` ไม่ถูกเก็บในฐานข้อมูล |
+| `last_ev_ts` | int (epoch) | `netpie.cpp` ใส่ให้เอง **(เพิ่มใหม่)** | 1763170980 |
+
+field ทุกตัวต้องอยู่ใน Device Schema ([netpie-device-schema.json](../../3-gateway-cloud/netpie-device-schema.json)) ไม่งั้น NETPIE ไม่รับ
 
 เปิด **Feed** ของ device ไว้ ให้ `hr`, `spo2`, `batt`, `temp`, `hum` เก็บเป็นกราฟย้อนหลัง (ใช้ตอบข้อ M5 raw data)
 
@@ -49,6 +53,7 @@ topic: `@msg/spb/event` ทุก event ใช้รูปแบบเดีย�
 | low_battery | `batt` |
 | node_offline | `last_seen` |
 | node_power_off | `batt` **(เพิ่มใหม่ ยังไม่มีในรายชื่อเดิม)** |
+| fall_unanswered | `after_s` (600) **(เพิ่มใหม่: alarm ล้มครบ 10 นาทียังไม่มีคนรับ ใช้ส่ง LINE เตือนซ้ำ)** |
 | storage_warn | `temp`, `hum` |
 
 ---
@@ -74,7 +79,7 @@ body: `{"to": LINE_TO, "messages": [{"type": "text", "text": "..."}]}`
 |---|---|
 | fall_confirmed | ⚠️ มีคนล้ม เวลา 08:03 ชีพจร 110 SpO2 95% กรุณาตรวจสอบด่วน |
 | sos | 🆘 มีการกดขอความช่วยเหลือ (SOS) เวลา 08:03 |
-| alarm ล้มครบ 10 นาที | ⚠️ ยังไม่มีคนรับเหตุล้ม (ผ่านไป 10 นาที) |
+| fall_unanswered (alarm ล้มครบ 10 นาที) | ⚠️ ยังไม่มีคนรับเหตุล้ม (ผ่านไป 10 นาที) |
 | fall_acknowledged | ✅ มีคนรับเหตุแล้ว เวลา 08:07 |
 | pill_missed | 💊 ยังไม่ได้กินยามื้อ 08:00 (เลยมา 30 นาที) |
 | low_battery | 🔋 แบตกำไลเหลือ 18% กรุณาชาร์จ |
@@ -83,5 +88,7 @@ body: `{"to": LINE_TO, "messages": [{"type": "text", "text": "..."}]}`
 
 - ไม่ส่ง LINE: pill_taken, fall_cancelled, node_power_off (ดูใน dashboard พอ)
 - ถ้าเน็ตหลุดแล้วส่งตามทีหลัง ต่อท้ายว่า "(ส่งช้า เกิดเมื่อ 08:03)"
+- `LINE_TO` ว่าง → ใช้ `POST /v2/bot/message/broadcast` ส่งถึงทุกคนที่แอด LINE OA (ไม่ต้องหา userId)
+- ทุกข้อความมี header `X-Line-Retry-Key` (จาก ts+id ของ event) → retry แล้วญาติไม่ได้ข้อความซ้ำ
 - LINE Notify ปิดไปแล้ว ต้องใช้ Messaging API เท่านั้น และแพ็กเกจฟรีจำกัดจำนวนข้อความต่อเดือน ระวังตอนเทสซ้ำๆ
 
