@@ -1,7 +1,7 @@
 // เดโมกำไล (XIAO ESP32-C3) ส่งค่าเซนเซอร์จริงผ่าน ESP-NOW ไปกล่อง (คู่กับ test/hw_netpie_box)
 // MOTION (MPU6050) ทุก 0.5 วิ, STATUS (MAX30102) ทุก 5 วิ, ได้ CMD_PILL_REMIND = มอเตอร์สั่น
 // MOCK_SENSORS 1 = ไม่อ่านเซนเซอร์ ส่งชีพจร/acc จำลองแทน (เทสเส้นทาง กำไล→กล่อง→NETPIE)
-#define MOCK_SENSORS 1
+#define MOCK_SENSORS 0
 
 #include <WiFi.h>
 #include <Wire.h>
@@ -77,6 +77,20 @@ void loop() {
       if (b > 30 && b < 220) bpm = bpm ? bpm * 0.7 + b * 0.3 : b;
     }
   }
+
+#if !MOCK_SENSORS
+  // ขาเซนเซอร์ยังหลวม: ลองหาใหม่ทุก 2 วิ จนกว่าจะเจอ
+  static unsigned long lastRetry = 0;
+  if ((!mpuOk || !maxOk) && millis() - lastRetry >= 2000) {
+    lastRetry = millis();
+    if (!mpuOk && (mpuOk = mpuBegin())) Serial.println("MPU6050 เจอแล้ว");
+    if (!maxOk && (maxOk = pulse.begin(Wire, I2C_SPEED_FAST))) {
+      pulse.setup();
+      pulse.setPulseAmplitudeRed(0x0A);
+      Serial.println("MAX30102 เจอแล้ว");
+    }
+  }
+#endif
 
   static unsigned long lastMotion = 0;
   if (mpuOk && millis() - lastMotion >= 500) {
