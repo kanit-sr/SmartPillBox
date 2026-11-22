@@ -3,6 +3,7 @@ libraries/*
 !libraries/protocol/
 !libraries/espnow_link/
 !libraries/store_forward/
+!libraries/chawissdev-project-1_inferencing/
 # secrets
 **/secrets.h
 # build
