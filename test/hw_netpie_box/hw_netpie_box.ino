@@ -1,4 +1,4 @@
-// เดโมกล่องยา (ESP32 DevKit) ส่งค่าเซนเซอร์จริงขึ้น NETPIE shadow ของ spb_box ทุก 5 วิ
+// เดโมกล่องยา (ESP32 DevKit) ส่งค่าเซนเซอร์จริงขึ้น NETPIE shadow ของ pillbox ทุก 5 วิ
 // copy secrets.example.h เป็น secrets.h แล้วใส่ Wi-Fi + NETPIE (secrets.h ไม่ขึ้น git)
 // ปุ่มเคลียร์บน dashboard (@msg/spb/cmd clear_alarm) = buzzer บี๊บ + ไฟเขียว 1 วิ
 #include <WiFi.h>

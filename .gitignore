@@ -14,3 +14,6 @@ build/
 
 # PlatformIO build output
 .pio/
+
+# folder ที่ไม่เอาขึ้น git
+Bombaclat/
