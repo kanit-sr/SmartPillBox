@@ -5,8 +5,8 @@
 #define NODE_ID              1      // กำไลจริง = 1, node จำลองตั้งเลขอื่น (1–254 ห้ามซ้ำ)
 
 // MAC ของกล่องยา (ESP32 DevKit) ดูได้จาก Serial ตอนกล่องบูต หรือจาก fake_box
-// TODO: แก้เป็น MAC กล่องจริง
-#define GATEWAY_MAC          {0x24, 0x6F, 0x28, 0x00, 0x00, 0x00}
+// กล่องที่ใช้จริง (DevKit ตัวเดียวกับที่เทส) a4:f0:0f:65:80:6c
+#define GATEWAY_MAC          {0xA4, 0xF0, 0x0F, 0x65, 0x80, 0x6C}
 
 #define DEBUG_LOG            1      // 1 = พิมพ์ log ทาง Serial 115200
 
