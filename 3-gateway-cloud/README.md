@@ -21,7 +21,7 @@ ESP32 DevKit + Reed + DHT11 + Ultrasonic + RGB LED + Buzzer + ปุ่มเค
 
 Library ที่ต้องลงเพิ่ม (Library Manager): **PubSubClient** (Nick O'Leary), **ArduinoJson** v7 (Benoit Blanchon)
 
-ตั้งค่า NETPIE + LINE ทีละขั้น: [SETUP-cloud.md](SETUP-cloud.md) · Device Schema: [netpie-device-schema.json](netpie-device-schema.json)
+ตั้งค่า NETPIE + LINE ทีละขั้น: [SETUP-cloud.md](SETUP-cloud.md) · Device Schema: [netpie-device-schema.json](../1-system-architect/docs/netpie-device-schema.json)
 
 ## netpie.* ทำงานยังไง
 

@@ -162,7 +162,7 @@ static void onMessage(char* topic, byte* payload, unsigned int len) {
   if (deserializeJson(doc, payload, len)) return;
 
   if (!strcmp(topic, TOPIC_CMD)) {
-    // dashboard: #["spb_box"].publishMsg("spb/cmd", JSON.stringify({cmd:"clear_alarm"}))
+    // dashboard: #["pillbox"].publishMsg("spb/cmd", JSON.stringify({cmd:"clear_alarm"}))
     if (doc["cmd"] == "clear_alarm") {
       xSemaphoreTake(mtx, portMAX_DELAY);
       clearAlarm = true;
