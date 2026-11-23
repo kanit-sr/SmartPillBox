@@ -6,7 +6,7 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/queue.h>
 
-#define MAX_PKT       32  // packet ใหญ่สุดใน protocol.h แค่ 12 bytes
+#define MAX_PKT       32  // packet ใหญ่สุดใน protocol.h แค่ 17 bytes
 #define RX_QUEUE_LEN  8
 #define SCAN_AFTER    3   // ไม่ได้ ACK ติดกันกี่ครั้งถึงจะ scan channel
 
@@ -19,15 +19,17 @@ static uint8_t  failCount = 0;
 // ACK ที่รออยู่ (กำไล) — เขียนจาก WiFi task อ่านจาก loop
 static volatile bool     ackGot = false;
 static volatile uint16_t ackWaitSeq = 0;
+static volatile uint8_t  ackWaitNode = 0;
 static volatile uint8_t  lastCmd = 0;
 
 // ฝั่งกล่อง
 static LinkRecvCallback userCb = nullptr;
 static QueueHandle_t    rxQueue = nullptr;
 static volatile uint8_t pendingCmd = 0;
-static uint16_t lastRxSeq = 0;
-static uint8_t  lastRxType = 0;
-static bool     haveLastRx = false;
+// packet ล่าสุดของแต่ละ node_id (กันรับซ้ำ แยกต่อ node) index = node_id
+static uint16_t lastRxSeq[256];
+static uint8_t  lastRxType[256];
+static bool     haveLastRx[256];
 
 struct RxItem {
   uint8_t len;
@@ -48,6 +50,7 @@ static void sendAck(const uint8_t* mac, const PacketHeader* h) {
   AckPacket a;
   a.hdr.ver  = PROTO_VER;
   a.hdr.type = ACK;
+  a.hdr.node_id = h->node_id;  // node ปลายทาง (บอร์ดจำลองหลาย node ใช้ MAC เดียวกัน)
   a.hdr.seq  = mySeq++;
   a.ack_seq  = h->seq;
   a.ack_type = h->type;
@@ -65,22 +68,26 @@ static void handleRx(const uint8_t* mac, const uint8_t* data, int len) {
   if (h->type == ACK) {  // กำไลได้ ACK
     if (len < (int)sizeof(AckPacket)) return;
     const AckPacket* a = (const AckPacket*)data;
-    if (a->ack_seq == ackWaitSeq) {
+    if (a->ack_seq == ackWaitSeq && a->hdr.node_id == ackWaitNode) {
       lastCmd = a->cmd;
       ackGot = true;
     }
     return;
   }
 
+  // node_id 0 และ 255 สงวนไว้ ทิ้ง
+  uint8_t n = h->node_id;
+  if (n == 0 || n == 255) return;
+
   // กล่องได้ packet จากกำไล: ตอบ ACK ทุกครั้ง แม้เป็นตัวซ้ำ
   sendAck(mac, h);
   RxItem item;
   item.len = len;
-  item.isDup = haveLastRx && h->seq == lastRxSeq && h->type == lastRxType;
+  item.isDup = haveLastRx[n] && h->seq == lastRxSeq[n] && h->type == lastRxType[n];
   memcpy(item.data, data, len);
-  lastRxSeq = h->seq;
-  lastRxType = h->type;
-  haveLastRx = true;
+  lastRxSeq[n] = h->seq;
+  lastRxType[n] = h->type;
+  haveLastRx[n] = true;
   if (rxQueue) xQueueSend(rxQueue, &item, 0);
 }
 
@@ -141,6 +148,8 @@ bool linkSend(uint8_t type, void* pkt, size_t len, uint8_t tries, bool sameSeq) 
   h->ver = PROTO_VER;
   h->type = type;
   h->seq = mySeq;
+  if (h->node_id == 0) h->node_id = 1;  // ผู้ส่งไม่ได้ตั้ง node_id → ถือเป็นกำไลจริง (node 1)
+  ackWaitNode = h->node_id;
 
   for (uint8_t i = 0; i < tries; i++) {
     if (sendOnce((uint8_t*)pkt, len, mySeq)) {

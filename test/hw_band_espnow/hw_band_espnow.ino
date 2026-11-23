@@ -85,7 +85,7 @@ void sendEvent(char ev) {
   uint8_t hr = mockHr();
   bool ok;
   if (ev == 'f') {
-    FallConfirmedPacket p;
+    FallConfirmedPacket p = {};
     p.hr = hr;
     p.spo2 = 94;
     p.conf = 91;
@@ -93,7 +93,7 @@ void sendEvent(char ev) {
     p.batt_pct = 100;
     ok = linkSend(FALL_CONFIRMED, &p, sizeof(p), 10);
   } else {
-    SosPacket p;
+    SosPacket p = {};
     p.hr = hr;
     p.spo2 = 96;
     p.age_ms = 0;
@@ -185,7 +185,7 @@ void loop() {
 #else
     mpuRead(v);
 #endif
-    MotionPacket m;
+    MotionPacket m = {};
     m.ax = (int32_t)v[0] * 1000 / 16384;
     m.ay = (int32_t)v[1] * 1000 / 16384;
     m.az = (int32_t)v[2] * 1000 / 16384;
@@ -201,7 +201,7 @@ void loop() {
   if (millis() - lastStatus >= 5000) {
     lastStatus = millis();
     bool finger = lastIr > 50000;
-    StatusPacket p;
+    StatusPacket p = {};
     p.hr = finger ? (uint8_t)bpm : 0;
     p.spo2 = 0;  // ยังไม่ได้คำนวณ SpO2 จากเซนเซอร์จริงในเดโมนี้
 #if MOCK_SENSORS

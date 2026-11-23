@@ -26,6 +26,7 @@ enum MsgType : uint8_t {
 #define SOS_HOLD          3000UL    // 3 วิ
 #define POWER_OFF_HOLD    10000UL   // 10 วิ
 #define ACK_TIMEOUT       200UL     // 200 ms
+#define MAX_NODES         8         // ขนาดตาราง node ในกล่อง (ไม่ใช่ช่วงของ id, id ใช้ได้ 1–254)
 
 // ---------- bit ของ flags (ใน STATUS) ----------
 #define FLAG_MAX30102_OK  (1 << 0)  // bit0 = MAX30102 ใช้ได้
@@ -38,11 +39,12 @@ enum MsgType : uint8_t {
 
 // ---------- packet (packed: ขนาดตรงตาม spec ไม่มี padding) ----------
 
-// Header ร่วม 4 bytes อยู่หน้าทุก packet (espnow_link กรอกให้เอง)
+// Header ร่วม 5 bytes อยู่หน้าทุก packet (espnow_link กรอก ver/type/seq ให้เอง)
 struct __attribute__((packed)) PacketHeader {
-  uint8_t  ver;    // = PROTO_VER
-  uint8_t  type;   // MsgType
-  uint16_t seq;    // เลขลำดับของผู้ส่ง
+  uint8_t  ver;      // = PROTO_VER
+  uint8_t  type;     // MsgType
+  uint8_t  node_id;  // หมายเลขกำไล 1–254 (0, 255 สงวนไว้) ใน ACK = node ปลายทาง
+  uint16_t seq;      // เลขลำดับของผู้ส่ง
 };
 
 struct __attribute__((packed)) StatusPacket {
@@ -96,11 +98,11 @@ struct __attribute__((packed)) AckPacket {
 };
 
 // เช็คขนาดตอน compile (ถ้าใครแก้ struct แล้วขนาดเพี้ยนจะ compile ไม่ผ่าน)
-static_assert(sizeof(PacketHeader) == 4, "header must be 4 bytes");
-static_assert(sizeof(StatusPacket) == 10, "STATUS size");
-static_assert(sizeof(FallConfirmedPacket) == 12, "FALL_CONFIRMED size");
-static_assert(sizeof(FallCancelledPacket) == 9, "FALL_CANCELLED size");
-static_assert(sizeof(SosPacket) == 11, "SOS size");
-static_assert(sizeof(PowerOffPacket) == 5, "POWER_OFF size");
-static_assert(sizeof(MotionPacket) == 16, "MOTION size");
-static_assert(sizeof(AckPacket) == 8, "ACK size");
+static_assert(sizeof(PacketHeader) == 5, "header must be 5 bytes");
+static_assert(sizeof(StatusPacket) == 11, "STATUS size");
+static_assert(sizeof(FallConfirmedPacket) == 13, "FALL_CONFIRMED size");
+static_assert(sizeof(FallCancelledPacket) == 10, "FALL_CANCELLED size");
+static_assert(sizeof(SosPacket) == 12, "SOS size");
+static_assert(sizeof(PowerOffPacket) == 6, "POWER_OFF size");
+static_assert(sizeof(MotionPacket) == 17, "MOTION size");
+static_assert(sizeof(AckPacket) == 9, "ACK size");

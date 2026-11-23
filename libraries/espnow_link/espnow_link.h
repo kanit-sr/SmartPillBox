@@ -19,7 +19,8 @@ bool linkBegin(const uint8_t* peerMac);
 // ---------- ฝั่งกำไล ----------
 
 // ส่ง packet แล้วรอ ACK (ACK_TIMEOUT ต่อรอบ) ส่งได้สูงสุด tries รอบ
-//   pkt     = struct จาก protocol.h ที่กรอก payload แล้ว (header กรอกให้เอง)
+//   pkt     = struct จาก protocol.h ที่กรอก payload + hdr.node_id แล้ว (ver/type/seq กรอกให้เอง)
+//             hdr.node_id = 0 จะถูกตั้งเป็น 1 ให้ (กำไลจริง)
 //   sameSeq = true ใช้ seq เดิมของครั้งก่อน (ใช้ตอนส่ง FALL_CONFIRMED/SOS ซ้ำใน loop
 //             เพื่อให้กล่องรู้ว่าเป็นเหตุการณ์เดิม)
 // คืน true ถ้าได้ ACK; cmd ที่ได้มาอ่านด้วย linkLastCmd()

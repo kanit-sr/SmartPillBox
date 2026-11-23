@@ -7,10 +7,10 @@
 void onPacket(uint8_t type, const uint8_t* data, int len, bool isDup) {
   if (type == STATUS) {
     const StatusPacket* s = (const StatusPacket*)data;
-    Serial.printf("STATUS seq=%u hr=%u spo2=%u batt=%u%% %s\n",
-                  s->hdr.seq, s->hr, s->spo2, s->batt_pct, isDup ? "(dup)" : "");
+    Serial.printf("STATUS node=%u seq=%u hr=%u spo2=%u batt=%u%% %s\n",
+                  s->hdr.node_id, s->hdr.seq, s->hr, s->spo2, s->batt_pct, isDup ? "(dup)" : "");
   } else {
-    Serial.printf("type=%u len=%d %s\n", type, len, isDup ? "(dup)" : "");
+    Serial.printf("type=%u node=%u len=%d %s\n", type, data[2], len, isDup ? "(dup)" : "");
   }
 }
 
