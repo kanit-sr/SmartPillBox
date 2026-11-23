@@ -2,12 +2,13 @@
 
 ## 1. NETPIE2020 (portal.netpie.io)
 
-1. ใช้ project และ device เดิมของทีม (alias **`spb_box`** ตามที่ dashboard ใช้ `#["spb_box"]`)
-   - ถ้ายังไม่มี: สร้าง Project → Device Groups → สร้างกลุ่ม → Devices → สร้าง device ใส่ alias `spb_box` แล้วย้ายเข้ากลุ่ม
+1. ใช้ project และ device เดิมของทีม (alias **`pillbox`** ตามที่ dashboard ใช้ `#["pillbox"]`)
+   - ถ้ายังไม่มี: สร้าง Project → Device Groups → สร้างกลุ่ม → Devices → สร้าง device ใส่ alias `pillbox` แล้วย้ายเข้ากลุ่ม
 2. เปิด device → **Key** → copy Client ID / Token / Secret ไปใส่ `secrets.h`
-3. แท็บ **Schema** → วางเนื้อหา [netpie-device-schema.json](netpie-device-schema.json) → Save
-   - field ที่มี `store` (hr, spo2, batt, temp, hum) จะเก็บลง **Feed** เป็นกราฟย้อนหลัง 30 วัน
-   - schema ตั้ง `additionalProperties: false` ถ้าจะเพิ่ม field ใหม่ใน shadow ต้องเพิ่มใน schema ด้วย ไม่งั้น NETPIE จะไม่รับ
+3. แท็บ **Schema** → วางเนื้อหา [netpie-device-schema.json](../1-system-architect/docs/netpie-device-schema.json) → Save
+   - field ของกำไลแยกต่อ node ด้วย suffix `_<node_id>` (`hr_1`, `spo2_1`, `batt_1`, ...) ตาม [netpie-schema.md](../1-system-architect/docs/netpie-schema.md)
+   - field ที่มี `store` (`hr_1`, `spo2_1`, `batt_1`, `temp`, `hum`) จะเก็บลง **Feed** เป็นกราฟย้อนหลัง 30 วัน
+   - schema ตั้ง `additionalProperties: true` node ที่ 4 ขึ้นไปจึงเกิด field ใน shadow ได้เอง (แค่ไม่ถูกตรวจชนิด)
 4. เปิด **Feed** ของ device (สวิตช์ Store / Feed เปิดอยู่)
 5. dashboard ต้องอยู่ใน project เดียวกัน และ device ต้องอยู่ใน group ที่ dashboard ผูกไว้
 
@@ -56,4 +57,4 @@ python3 4-dashboard-testing/tools/mock_box.py          # ส่งค่าป�
 python3 4-dashboard-testing/tools/mock_box.py --fall   # จำลองล้ม
 ```
 
-ใช้ device เดียวกับกล่องได้ แต่ห้ามเปิดพร้อมกล่องจริง (Client ID เดียวกันจะเตะกันหลุด) หรือสร้าง device ทดสอบแยกที่ alias `spb_box` ใน group อื่น
+ใช้ device เดียวกับกล่องได้ แต่ห้ามเปิดพร้อมกล่องจริง (Client ID เดียวกันจะเตะกันหลุด) หรือสร้าง device ทดสอบแยกที่ alias `pillbox` ใน group อื่น

@@ -5,7 +5,7 @@
 #define WIFI_SSID        ""
 #define WIFI_PASS        ""
 
-// NETPIE2020 → Device ของกล่องยา (alias "spb_box") → Key
+// NETPIE2020 → Device ของกล่องยา (alias "pillbox") → Key
 #define NETPIE_CLIENT_ID ""
 #define NETPIE_TOKEN     ""
 #define NETPIE_SECRET    ""

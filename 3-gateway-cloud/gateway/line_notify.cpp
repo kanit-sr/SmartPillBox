@@ -78,20 +78,26 @@ static void numOrDash(int v, char out[8]) {
   else strcpy(out, "-");
 }
 
-bool lineTextForEvent(const char* ev, time_t ts, const char* d, time_t now, char* out, int outLen) {
+bool lineTextForEvent(const char* ev, time_t ts, const char* d, time_t now, uint8_t node,
+                      char* out, int outLen) {
   JsonDocument doc;
   if (d && *d) deserializeJson(doc, d);
   char t[6], hr[8], sp[8];
   hhmm(ts, t);
   numOrDash(doc["hr"] | 0, hr);
   numOrDash(doc["spo2"] | 0, sp);
+  char nd[32] = "", nn[8] = "";  // nd = " (กำไล #1)", nn = " #1"
+  if (node > 0) {
+    snprintf(nd, sizeof(nd), " (กำไล #%u)", node);
+    snprintf(nn, sizeof(nn), " #%u", node);
+  }
 
   if (!strcmp(ev, "fall_confirmed")) {
-    snprintf(out, outLen, "⚠️ มีคนล้ม เวลา %s ชีพจร %s SpO2 %s%% กรุณาตรวจสอบด่วน", t, hr, sp);
+    snprintf(out, outLen, "⚠️ มีคนล้ม%s เวลา %s ชีพจร %s SpO2 %s%% กรุณาตรวจสอบด่วน", nd, t, hr, sp);
   } else if (!strcmp(ev, "sos")) {
-    snprintf(out, outLen, "🆘 มีการกดขอความช่วยเหลือ (SOS) เวลา %s ชีพจร %s SpO2 %s%%", t, hr, sp);
+    snprintf(out, outLen, "🆘 มีการกดขอความช่วยเหลือ (SOS)%s เวลา %s ชีพจร %s SpO2 %s%%", nd, t, hr, sp);
   } else if (!strcmp(ev, "fall_unanswered")) {
-    snprintf(out, outLen, "⚠️ ยังไม่มีคนรับเหตุล้ม (ผ่านไป %d นาที)", (int)(doc["after_s"] | 600) / 60);
+    snprintf(out, outLen, "⚠️ ยังไม่มีคนรับเหตุล้ม%s (ผ่านไป %d นาที)", nd, (int)(doc["after_s"] | 600) / 60);
   } else if (!strcmp(ev, "fall_acknowledged")) {
     const char* by = doc["by"] | "button";
     snprintf(out, outLen, "✅ มีคนรับเหตุแล้ว เวลา %s (%s)", t,
@@ -99,11 +105,11 @@ bool lineTextForEvent(const char* ev, time_t ts, const char* d, time_t now, char
   } else if (!strcmp(ev, "pill_missed")) {
     snprintf(out, outLen, "💊 ยังไม่ได้กินยามื้อ %s (เลยมา 30 นาที)", (const char*)(doc["slot"] | "?"));
   } else if (!strcmp(ev, "low_battery")) {
-    snprintf(out, outLen, "🔋 แบตกำไลเหลือ %d%% กรุณาชาร์จ", (int)(doc["batt"] | 0));
+    snprintf(out, outLen, "🔋 แบตกำไล%s เหลือ %d%% กรุณาชาร์จ", nn, (int)(doc["batt"] | 0));
   } else if (!strcmp(ev, "node_offline")) {
     char ls[6];
     hhmm((time_t)(doc["last_seen"] | (long)ts), ls);
-    snprintf(out, outLen, "📡 กำไลขาดการติดต่อตั้งแต่ %s", ls);
+    snprintf(out, outLen, "📡 กำไล%s ขาดการติดต่อตั้งแต่ %s", nn, ls);
   } else if (!strcmp(ev, "storage_warn")) {
     snprintf(out, outLen, "🌡️ ที่เก็บยาร้อน/ชื้นเกิน %.1f°C ความชื้น %.0f%%",
              (float)(doc["temp"] | 0.0f), (float)(doc["hum"] | 0.0f));

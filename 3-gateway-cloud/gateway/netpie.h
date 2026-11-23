@@ -27,6 +27,8 @@ void netpieSet(const char* key, int value);
 void netpieSet(const char* key, float value);
 void netpieSet(const char* key, bool value);
 void netpieSet(const char* key, const char* value);
+// ค่าเป็น JSON (array/object) เช่น netpieSetJson("nodes", "[1,2]")
+void netpieSetJson(const char* key, const char* json);
 
 // ---------- Event (@msg/spb/event + LINE) ----------
 // ev     = ชื่อ event ตาม netpie-schema.md เช่น "fall_confirmed"
@@ -34,9 +36,10 @@ void netpieSet(const char* key, const char* value);
 //          (ใส่ nullptr ถ้าไม่มี)
 // ts     = เวลาที่เกิดจริง (epoch) ใส่ 0 = ตอนนี้
 //          ถ้าเป็น event จากกำไล ให้ใส่ netpieNow() - age_ms/1000
+// node   = node_id ของกำไลที่เกี่ยวข้อง, event ของกล่องเอง (pill_*, storage_warn) ใส่ 0
 // event เข้าคิว store_forward ก่อนเสมอ เน็ตหลุดก็ไม่หาย (เก็บได้ SF_MAX อัน) แล้วส่งตามทีหลัง
 // คืน false ถ้าคิวภายในเต็มหรือ JSON ยาวเกิน
-bool netpieEvent(const char* ev, const char* dJson = nullptr, time_t ts = 0);
+bool netpieEvent(const char* ev, const char* dJson = nullptr, time_t ts = 0, uint8_t node = 0);
 
 // ---------- คำสั่งจาก dashboard ----------
 // คืน true ครั้งเดียวต่อการกดปุ่ม "เคลียร์ alarm" บน dashboard (@msg/spb/cmd {"cmd":"clear_alarm"})

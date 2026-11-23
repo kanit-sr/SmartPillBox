@@ -69,18 +69,30 @@ void netpieSet(const char* key, const char* value) {
   xSemaphoreGive(mtx);
 }
 
+void netpieSetJson(const char* key, const char* json) {
+  JsonDocument v;
+  if (deserializeJson(v, json)) return;  // JSON เสีย ไม่ส่ง
+  xSemaphoreTake(mtx, portMAX_DELAY);
+  String k(key);
+  if (last[k].isNull() || last[k] != v.as<JsonVariantConst>()) {
+    last[k] = v;
+    pending[k] = v;
+  }
+  xSemaphoreGive(mtx);
+}
+
 // ---------- Event ----------
-bool netpieEvent(const char* ev, const char* dJson, time_t ts) {
+bool netpieEvent(const char* ev, const char* dJson, time_t ts, uint8_t node) {
   EvItem it;
   if (ts == 0) ts = netpieNow();
   int n;
   if (ts > 0) {
-    n = snprintf(it.json, SF_LEN, "{\"ev\":\"%s\",\"ts\":%ld,\"id\":%lu,\"d\":%s}",
-                 ev, (long)ts, (unsigned long)++evId, dJson ? dJson : "{}");
+    n = snprintf(it.json, SF_LEN, "{\"ev\":\"%s\",\"ts\":%ld,\"id\":%lu,\"node\":%u,\"d\":%s}",
+                 ev, (long)ts, (unsigned long)++evId, node, dJson ? dJson : "{}");
   } else {
     // ยังไม่ได้เวลาจาก NTP: จำ millis ไว้ แล้วคำนวณ ts ตอนส่ง
-    n = snprintf(it.json, SF_LEN, "{\"ev\":\"%s\",\"ts\":0,\"ms\":%lu,\"id\":%lu,\"d\":%s}",
-                 ev, (unsigned long)millis(), (unsigned long)++evId, dJson ? dJson : "{}");
+    n = snprintf(it.json, SF_LEN, "{\"ev\":\"%s\",\"ts\":0,\"ms\":%lu,\"id\":%lu,\"node\":%u,\"d\":%s}",
+                 ev, (unsigned long)millis(), (unsigned long)++evId, node, dJson ? dJson : "{}");
   }
   if (n >= SF_LEN) return false;
   return xQueueSend(evQueue, &it, 0) == pdTRUE;
@@ -162,7 +174,7 @@ static void onMessage(char* topic, byte* payload, unsigned int len) {
   if (deserializeJson(doc, payload, len)) return;
 
   if (!strcmp(topic, TOPIC_CMD)) {
-    // dashboard: #["spb_box"].publishMsg("spb/cmd", JSON.stringify({cmd:"clear_alarm"}))
+    // dashboard: #["pillbox"].publishMsg("spb/cmd", JSON.stringify({cmd:"clear_alarm"}))
     if (doc["cmd"] == "clear_alarm") {
       xSemaphoreTake(mtx, portMAX_DELAY);
       clearAlarm = true;
@@ -232,12 +244,14 @@ static bool publishEvent(const char* json) {
   const char* ev = e["ev"] | "";
   netpieSet("last_ev", ev);
   netpieSet("last_ev_ts", (int)ts);
+  netpieSetJson("last_event", body.c_str());  // payload เดียวกับ @msg/spb/event เป๊ะ
 
   char key[32], text[300];
   snprintf(key, sizeof(key), "%ld_%lu", (long)ts, (unsigned long)(e["id"] | 0UL));
   String d;
   serializeJson(e["d"], d);
-  if (lineTextForEvent(ev, ts, d.c_str(), now, text, sizeof(text))) {
+  uint8_t node = e["node"] | 0;
+  if (lineTextForEvent(ev, ts, d.c_str(), now, node, text, sizeof(text))) {
     // LINE ไม่ผ่านชั่วคราว → ส่งทั้ง event ใหม่ (retry key เดิม ญาติไม่ได้ LINE ซ้ำ)
     if (lineSend(text, key) == LINE_RETRY) return false;
   }

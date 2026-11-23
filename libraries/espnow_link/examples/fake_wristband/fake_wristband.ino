@@ -13,7 +13,7 @@ void setup() {
 }
 
 void loop() {
-  StatusPacket p;
+  StatusPacket p = {};
   p.hr = 75;
   p.spo2 = 98;
   p.batt_pct = 80;
