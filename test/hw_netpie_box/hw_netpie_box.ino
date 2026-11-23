@@ -1,4 +1,4 @@
-// เดโมกล่องยา (ESP32 DevKit) ส่งค่าเซนเซอร์จริงขึ้น NETPIE shadow ทุก 1 วิ
+// เดโมกล่องยา (ESP32 DevKit) ส่งค่าเซนเซอร์จริงขึ้น NETPIE shadow ของ pillbox ทุก 1 วิ
 // รวมค่าจากกำไล (test/hw_band_espnow) ที่ส่งมาทาง ESP-NOW: hr_1, spo2_1, acc_*_1, gyro_*_1
 // FALL_CONFIRMED / SOS จากกำไล = box_state fall_alarm / sos, ไฟแดง + buzzer ดังเป็นจังหวะ
 // copy secrets.example.h เป็น secrets.h แล้วใส่ Wi-Fi + NETPIE (secrets.h ไม่ขึ้น git)

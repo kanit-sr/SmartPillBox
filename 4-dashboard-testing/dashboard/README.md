@@ -7,17 +7,17 @@
 - หน้าตั้งตารางยา (เขียนลง shadow)
 - ปุ่มเคลียร์ alarm
 
-// อ่านค่าชีพจรในช่อง VALUE ของ widget
-#["spb_box"]["shadow"]["hr"]
+// อ่านค่าชีพจรในช่อง VALUE ของ widget (field แยกต่อ node: hr_1, hr_2, ...)
+#["pillbox"]["shadow"]["hr_1"]
 
 // Action ของปุ่มเคลียร์ alarm
-#["spb_box"].publishMsg(
+#["pillbox"].publishMsg(
   "spb/cmd",
   JSON.stringify({ cmd: "clear_alarm" })
 );
 
 // เขียนตารางยา
-#["spb_box"].writeShadow(
+#["pillbox"].writeShadow(
   "schedule",
   ["08:00", "12:00", "19:00"]
 );
