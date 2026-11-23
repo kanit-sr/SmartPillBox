@@ -1,0 +1,21 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "hr":              { "type": "number",  "operation": { "store": { "ttl": "30d" } } },
+    "spo2":            { "type": "number",  "operation": { "store": { "ttl": "30d" } } },
+    "batt":            { "type": "number",  "operation": { "store": { "ttl": "30d" } } },
+    "temp":            { "type": "number",  "operation": { "store": { "ttl": "30d" } } },
+    "hum":             { "type": "number",  "operation": { "store": { "ttl": "30d" } } },
+    "node_online":     { "type": "boolean" },
+    "node_last_seen":  { "type": "number" },
+    "lid_open":        { "type": "boolean" },
+    "person":          { "type": "boolean" },
+    "box_state":       { "type": "string" },
+    "next_pill":       { "type": "string" },
+    "last_pill_taken": { "type": "number" },
+    "queue":           { "type": "number" },
+    "schedule":        { "type": "array" },
+    "last_ev":         { "type": "string" },
+    "last_ev_ts":      { "type": "number" }
+  }
+}

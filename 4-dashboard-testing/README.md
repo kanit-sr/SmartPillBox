@@ -47,3 +47,6 @@ python -B -m unittest discover -s 4-dashboard-testing/test/automated -p "test_*.
 - [Requirement coverage](test/requirement-coverage.md): เชื่อมเกณฑ์โจทย์กับหลักฐาน รวมข้อที่ต้องให้ทีมตัดสินใจ
 
 ทุกตัวอย่างที่ติดป้าย MOCK ใช้เตรียมทดสอบเท่านั้น กรอกผลจริงพร้อม build/commit, Run ID และหลักฐานก่อนตัดสิน PASS
+- `dashboard/` — การตั้งค่า NETPIE dashboard, mock data
+- `tools/mock_box.py` — กล่องยาจำลอง ส่งข้อมูลเข้า NETPIE ไว้เทส dashboard โดยไม่มีฮาร์ดแวร์
+- `test/` — test plan, ผลทดสอบ, ตัวชี้วัด

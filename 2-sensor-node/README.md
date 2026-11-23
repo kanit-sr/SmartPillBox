@@ -11,7 +11,20 @@ XIAO ESP32-C3 + MPU6050 + MAX30102 + มอเตอร์สั่น + ปุ�
 | `button.*` | กดสั้น/ค้าง 3 วิ/ค้าง 10 วิ/ปลุกจาก deep sleep |
 | `motor.*` | รูปแบบการสั่น |
 | `fall_detector.*` | เรียกโมเดล Edge Impulse |
+| `packets.h` | ส่ง packet ผ่าน `espnow_link` + ใส่ `node_id` ให้เมื่อ `protocol.h` มี field นี้ |
 | `sensor_node.ino` | setup/loop + state machine ของกำไล |
+
+## การต่อสาย (XIAO ESP32-C3)
+
+| อุปกรณ์ | ขา | หมายเหตุ |
+|---|---|---|
+| MPU6050 + MAX30102 | SDA = D4 (GPIO6), SCL = D5 (GPIO7) | บัส I2C เดียวกัน, address 0x68 / 0x57 |
+| ปุ่ม | D1 (GPIO3) → GND | pull-up ภายใน, ใช้ปลุก deep sleep ได้ (C3 ปลุกได้เฉพาะ GPIO0–5) |
+| มอเตอร์สั่น | D10 (GPIO10) → base/gate ทรานซิสเตอร์ | ใส่ diode กลับขั้วคร่อมมอเตอร์ + R pull-down ที่ base |
+| แบต | D0 (GPIO2) ← divider 1:2 จาก BAT+ | เช่น 220k + 220k, ยังไม่ต่อให้ตั้ง `BATT_ENABLED 0` |
+
+ไม่ต้องลง library เพิ่ม (MAX30102 อ่าน register ตรงๆ) ใช้แค่ `protocol`, `espnow_link` และ `chawissdev-project-1_inferencing` ใน `libraries/`
+ก่อนอัปโหลดแก้ `GATEWAY_MAC` ใน `config.h` เป็น MAC ของกล่องยา
 | `ml/` | dataset และโน้ตการเทรน |
 | `pm/` | timeline, บันทึกประชุม, เรื่องที่รอคำตอบอาจารย์ (งาน PM) |
 

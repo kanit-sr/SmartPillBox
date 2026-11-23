@@ -3,6 +3,7 @@ libraries/*
 !libraries/protocol/
 !libraries/espnow_link/
 !libraries/store_forward/
+!libraries/chawissdev-project-1_inferencing/
 # secrets
 **/secrets.h
 # build
@@ -13,3 +14,6 @@ build/
 
 # PlatformIO build output
 .pio/
+
+# folder ที่ไม่เอาขึ้น git
+Bombaclat/
