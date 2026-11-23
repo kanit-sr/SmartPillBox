@@ -35,47 +35,31 @@ Library ที่ต้องลงเพิ่ม (Library Manager): **PubSubCl
 - LINE ใช้ `X-Line-Retry-Key` → retry แล้วญาติไม่ได้ข้อความซ้ำ
 - event ล่าสุดเขียนลง shadow (`last_ev`, `last_ev_ts`) ด้วย เพราะ `@msg` ไม่ถูกเก็บในฐานข้อมูลของ NETPIE
 
-## ใช้ใน gateway.ino
+## gateway.ino ทำงานยังไง
 
-```cpp
-#include "netpie.h"
-
-void setup() {
-  Serial.begin(115200);
-  netpieBegin();         // ก่อน linkBegin เสมอ
-  linkBegin(nullptr);
-  linkOnReceive(onPacket);
-}
-
-void onPacket(uint8_t type, const uint8_t* data, int len, bool isDup) {
-  if (type == STATUS) {
-    auto* p = (const StatusPacket*)data;
-    netpieSet("hr", (int)p->hr);
-    netpieSet("spo2", (int)p->spo2);
-    netpieSet("batt", (int)p->batt_pct);
-    netpieSet("node_online", true);
-    netpieSet("node_last_seen", (int)netpieNow());
-  } else if (type == FALL_CONFIRMED && !isDup) {
-    auto* p = (const FallConfirmedPacket*)data;
-    char d[64];
-    snprintf(d, sizeof d, "{\"hr\":%u,\"spo2\":%u,\"conf\":%u}", p->hr, p->spo2, p->conf);
-    time_t ts = netpieNow() ? netpieNow() - p->age_ms / 1000 : 0;
-    netpieEvent("fall_confirmed", d, ts);   // → @msg/spb/event + LINE
-    netpieSet("box_state", "fall_alarm");
-  }
-}
-
-void loop() {
-  linkLoop();
-  if (netpieTakeClearAlarm()) { /* หยุด alarm เหมือนกดปุ่มที่กล่อง */ }
-
-  bool changed;
-  char slots[8][6];
-  int n = netpieSchedule(slots, 8, &changed);
-  if (changed) { /* โหลดตารางยาใหม่ลง pill_schedule */ }
-
-  // alarm ล้มครบ 10 นาทียังไม่มีคนรับ → netpieEvent("fall_unanswered", "{\"after_s\":600}");
-}
 ```
+loop():
+  linkLoop()          packet จากกำไล → node_monitor (shadow hr_<n>, แบตต่ำ, ขาดการติดต่อ)
+                                     → fall_alarm (fall_confirmed / sos / fall_cancelled)
+  ปุ่มกล่อง           มี alarm ล้ม → เคลียร์ (fall_acknowledged) / ไม่มี → ปิดเสียงเตือนยา
+  netpieTakeClearAlarm()  ปุ่มเคลียร์บน dashboard
+  netpieSchedule()    ตารางยาใหม่ → pill_schedule
+  pillLoop()          เตือนยา 10/30 นาที, pill_taken / pill_missed
+  updateOutputs()     เลือก LED / buzzer / box_state ตามลำดับความสำคัญ (state-diagram.md ข้อ 3)
+```
+
+ชื่อ field ใน shadow แยกต่อ node (`hr_1`, `spo2_1`, `batt_1`, `node_online_1`, ...) ตาม [netpie-schema.md](../1-system-architect/docs/netpie-schema.md)
+
+### ทดสอบทาง Serial Monitor (115200)
+
+| key | ทำอะไร |
+|---|---|
+| `p` | เริ่มเตือนยาทันที |
+| `f` / `s` | จำลองล้ม / SOS จากกำไล #1 (ส่ง LINE จริง) |
+| `b` | จำลอง STATUS แบต 15% จากกำไล #1 (ส่ง LINE จริงครั้งแรก) |
+| `t` | บังคับที่เก็บยาร้อนเกิน (storage_warn) |
+| `?` | พิมพ์สถานะทุกโมดูล |
+
+เดโมในห้อง: ตั้ง `#define DEMO_FAST 1` ใน `config.h` เวลาที่เป็นนาที (เตือนยา 10/30, alarm 2/10, ที่เก็บยา 10) จะหดเป็นวินาที
 
 ทดสอบ dashboard ก่อนมีฮาร์ดแวร์: `4-dashboard-testing/tools/mock_box.py` (กล่องจำลอง ส่งเข้า NETPIE ไม่ส่ง LINE)
