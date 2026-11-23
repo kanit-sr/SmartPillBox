@@ -1,5 +1,17 @@
 # Dashboard
 
+## HTML Dashboard ที่รันในเครื่อง
+
+เปิดใช้หน้าเว็บที่ [web/index.html](web/index.html) หรือรันจาก root:
+
+```powershell
+python -B 4-dashboard-testing/dashboard/web/server.py
+```
+
+แล้วเปิด **http://127.0.0.1:8080** รองรับหลายกำไลตาม schema `hr_<n>` และมี DEMO แยกจากข้อมูลจริง ดู [วิธีเชื่อม NETPIE และทดสอบ](web/README.md)
+
+ส่วนด้านล่างเป็นแนวทางสร้าง widget ใน **NETPIE Console Dashboard** เดิม ตาราง field ที่ไม่มี suffix เป็นตัวอย่าง single-node; โปรเจกต์ปัจจุบันให้ยึด [schema ล่าสุด](../../1-system-architect/docs/netpie-schema.md) เช่น `hr_1`, `spo2_1`, `batt_1`
+
 เพิ่มภาพและ export หลังตรวจ D01–D06
 
 ## 1. สร้างและเชื่อม Dashboard

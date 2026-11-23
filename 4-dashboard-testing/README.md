@@ -2,6 +2,16 @@
 
 ส่วนนี้รับผิดชอบ dashboard, การทดสอบระบบ และการรวบรวมผลวัดสำหรับรายงาน ไม่ต้องรอ firmware เสร็จจึงเริ่มเตรียมข้อมูลและตรวจรูปแบบ payload ได้
 
+## เปิด HTML Dashboard
+
+มีหน้าเว็บภาษาไทยพร้อมโหมด DEMO และเชื่อมข้อมูลกล่องผ่าน NETPIE REST API:
+
+```powershell
+python -B 4-dashboard-testing/dashboard/web/server.py
+```
+
+เปิด **http://127.0.0.1:8080** แล้วกด **เชื่อมต่อ NETPIE** กรอก Client ID และ Token ของกล่องยา ดู [คู่มือ HTML Dashboard](dashboard/web/README.md) สำหรับวิธีใช้ ข้อจำกัดของ firmware และคำสั่งทดสอบ
+
 ## การทดสอบการทำงานของโค้ดอยู่ตรงไหน?
 
 | สิ่งที่จะตรวจ | อยู่ที่ | ขอบเขต |
