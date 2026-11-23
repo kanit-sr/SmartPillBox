@@ -1,0 +1,96 @@
+{
+  // Ctrl+Shift+P > "Tasks: Run Task" (or Ctrl+Shift+B for the default build)
+  // Box = ESP32 DevKit, Wristband = XIAO ESP32-C3. Requires arduino-cli + esp32 core.
+  // DevKit: if upload hangs at "Connecting...", hold BOOT, tap EN, release BOOT, then run again.
+  // XIAO: do NOT add CDCOnBoot=cdc, in core 4.x that disables USB Serial.
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Board list",
+      "type": "shell",
+      "command": "arduino-cli board list",
+      "problemMatcher": []
+    },
+    {
+      "label": "Box: Compile",
+      "type": "shell",
+      "command": "arduino-cli compile --fqbn esp32:esp32:esp32 --libraries libraries ${input:boxSketch}",
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": "$gcc"
+    },
+    {
+      "label": "Box: Upload",
+      "type": "shell",
+      "command": "arduino-cli compile -u -p ${input:boxPort} --fqbn esp32:esp32:esp32:UploadSpeed=115200 --libraries libraries ${input:boxSketch}",
+      "group": "build",
+      "problemMatcher": "$gcc"
+    },
+    {
+      "label": "Box: Monitor",
+      "type": "shell",
+      "command": "arduino-cli monitor -p ${input:boxPort} -c baudrate=115200",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": { "panel": "dedicated" }
+    },
+    {
+      "label": "Wristband: Compile",
+      "type": "shell",
+      "command": "arduino-cli compile --fqbn esp32:esp32:XIAO_ESP32C3 --libraries libraries ${input:wristSketch}",
+      "group": "build",
+      "problemMatcher": "$gcc"
+    },
+    {
+      "label": "Wristband: Upload",
+      "type": "shell",
+      "command": "arduino-cli compile -u -p ${input:wristPort} --fqbn esp32:esp32:XIAO_ESP32C3 --libraries libraries ${input:wristSketch}",
+      "group": "build",
+      "problemMatcher": "$gcc"
+    },
+    {
+      "label": "Wristband: Monitor",
+      "type": "shell",
+      "command": "arduino-cli monitor -p ${input:wristPort} -c baudrate=115200",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": { "panel": "dedicated" }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "boxPort",
+      "type": "promptString",
+      "description": "DevKit (box) port, see 'Board list'",
+      "default": "COM3"
+    },
+    {
+      "id": "wristPort",
+      "type": "promptString",
+      "description": "XIAO (wristband) port, see 'Board list'",
+      "default": "COM4"
+    },
+    {
+      "id": "boxSketch",
+      "type": "pickString",
+      "description": "Box sketch",
+      "options": [
+        "libraries/espnow_link/examples/fake_box",
+        "3-gateway-cloud/gateway",
+        "libraries/store_forward/examples/sf_demo",
+        "libraries/protocol/examples/print_sizes"
+      ],
+      "default": "libraries/espnow_link/examples/fake_box"
+    },
+    {
+      "id": "wristSketch",
+      "type": "pickString",
+      "description": "Wristband sketch",
+      "options": [
+        "libraries/espnow_link/examples/fake_wristband",
+        "2-sensor-node/sensor_node",
+        "libraries/protocol/examples/print_sizes"
+      ],
+      "default": "libraries/espnow_link/examples/fake_wristband"
+    }
+  ]
+}
