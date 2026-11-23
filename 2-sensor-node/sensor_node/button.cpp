@@ -3,6 +3,7 @@
 #include "protocol.h"
 #include <Arduino.h>
 #include <esp_sleep.h>
+#include <esp_idf_version.h>
 #include <driver/gpio.h>
 #include <soc/soc_caps.h>
 
@@ -91,5 +92,9 @@ void button_enable_wakeup() {
   // (ถ้าสายยาว/มีสัญญาณรบกวนจนตื่นเอง ให้ใส่ R pull-up 10k ภายนอกเพิ่ม)
   gpio_pullup_en((gpio_num_t)PIN_BUTTON);
   gpio_pulldown_dis((gpio_num_t)PIN_BUTTON);
+#if ESP_IDF_VERSION_MAJOR >= 6  // esp32 core 4.x เปลี่ยนชื่อฟังก์ชันนี้
+  esp_sleep_enable_gpio_wakeup_on_hp_periph_powerdown(1ULL << PIN_BUTTON, ESP_GPIO_WAKEUP_GPIO_LOW);
+#else
   esp_deep_sleep_enable_gpio_wakeup(1ULL << PIN_BUTTON, ESP_GPIO_WAKEUP_GPIO_LOW);
+#endif
 }
