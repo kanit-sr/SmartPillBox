@@ -1,0 +1,35 @@
+$ python -B 4-dashboard-testing\test\tools\validate_payloads.py --mock 4-dashboard-testing\dashboard\mock-data.json
+DATA CHECK OK: shadows=1, event_messages=10, unique_events=10, duplicates=0
+Missing events were not checked: no independent expected-event list supplied.
+This checks data only; it does not establish a firmware or hardware PASS.
+
+Exit code: 0
+Elapsed seconds: 0.097
+
+$ python -B -m unittest discover -s 4-dashboard-testing\test\automated -p test_*.py -v
+test_backlog_does_not_have_to_arrive_in_timestamp_order (test_validate_payloads.PayloadChecks.test_backlog_does_not_have_to_arrive_in_timestamp_order) ... ok
+test_bad_schedule_format (test_validate_payloads.PayloadChecks.test_bad_schedule_format) ... ok
+test_bool_is_not_numeric_sensor_data (test_validate_payloads.PayloadChecks.test_bool_is_not_numeric_sensor_data) ... ok
+test_changed_queued_event_fails (test_validate_payloads.PayloadChecks.test_changed_queued_event_fails) ... ok
+test_cli_exit_codes (test_validate_payloads.PayloadChecks.test_cli_exit_codes) ... ok
+test_empty_logs_fail (test_validate_payloads.PayloadChecks.test_empty_logs_fail) ... ok
+test_fixture_covers_all_agreed_events (test_validate_payloads.PayloadChecks.test_fixture_covers_all_agreed_events) ... ok
+test_full_fixture_requires_all_shadow_fields (test_validate_payloads.PayloadChecks.test_full_fixture_requires_all_shadow_fields) ... ok
+test_identical_retry_is_counted_once (test_validate_payloads.PayloadChecks.test_identical_retry_is_counted_once) ... ok
+test_invalid_json_and_nonfinite_numbers_fail (test_validate_payloads.PayloadChecks.test_invalid_json_and_nonfinite_numbers_fail) ... ok
+test_missing_and_unknown_event_fields (test_validate_payloads.PayloadChecks.test_missing_and_unknown_event_fields) ... ok
+test_missing_expected_event_fails (test_validate_payloads.PayloadChecks.test_missing_expected_event_fails) ... ok
+test_partial_shadow_and_zero_values_are_valid (test_validate_payloads.PayloadChecks.test_partial_shadow_and_zero_values_are_valid) ... ok
+test_percent_bounds (test_validate_payloads.PayloadChecks.test_percent_bounds) ... ok
+test_same_id_changed_payload_is_rejected (test_validate_payloads.PayloadChecks.test_same_id_changed_payload_is_rejected) ... ok
+test_string_payloads_are_supported (test_validate_payloads.PayloadChecks.test_string_payloads_are_supported) ... ok
+test_typo_in_shadow_is_rejected (test_validate_payloads.PayloadChecks.test_typo_in_shadow_is_rejected) ... ok
+test_wrong_topic_and_missing_timezone_fail_with_line_number (test_validate_payloads.PayloadChecks.test_wrong_topic_and_missing_timezone_fail_with_line_number) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 0.274s
+
+OK
+
+Exit code: 0
+Elapsed seconds: 0.448

@@ -1,5 +1,5 @@
 {
-  "_note": "ข้อมูลจำลองสำหรับทดสอบ",
+  "_note": "MOCK เท่านั้น: shadow ตัวอย่างและ event แยกกรณีครบ 10 ชนิด ไม่ใช่ลำดับเหตุการณ์จริงหรือหลักฐานจากอุปกรณ์; timestamp เป็นค่าคงที่สำหรับทดสอบ",
   "shadow_update": {
     "data": {
       "hr": 78,
@@ -37,6 +37,14 @@
         "by": "dashboard",
         "after_s": 60
       }
-    }
+    },
+    { "ev": "fall_cancelled", "ts": 1763171100, "id": 44, "d": { "conf": 82 } },
+    { "ev": "sos", "ts": 1763171160, "id": 45, "d": { "hr": 92, "spo2": 97 } },
+    { "ev": "pill_taken", "ts": 1763171220, "id": 46, "d": { "slot": "08:00", "late_min": 2 } },
+    { "ev": "pill_missed", "ts": 1763171280, "id": 47, "d": { "slot": "12:00" } },
+    { "ev": "low_battery", "ts": 1763171340, "id": 48, "d": { "batt": 19 } },
+    { "ev": "node_offline", "ts": 1763171400, "id": 49, "d": { "last_seen": 1763171210 } },
+    { "ev": "node_power_off", "ts": 1763171460, "id": 50, "d": { "batt": 63 } },
+    { "ev": "storage_warn", "ts": 1763171520, "id": 51, "d": { "temp": 33.5, "hum": 85 } }
   ]
 }
