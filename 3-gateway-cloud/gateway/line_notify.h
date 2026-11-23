@@ -23,4 +23,6 @@ LineResult lineSend(const char* text, const char* retryKey = nullptr);
 // คืน false ถ้า event นี้ไม่ต้องแจ้ง LINE (pill_taken, fall_cancelled, node_power_off)
 // now = เวลาตอนส่ง ใช้ต่อท้าย "(ส่งช้า เกิดเมื่อ HH:MM)" ถ้าส่งช้ากว่า 2 นาที
 // d   = JSON ของ field "d"
-bool lineTextForEvent(const char* ev, time_t ts, const char* d, time_t now, char* out, int outLen);
+// node = node_id ของกำไล (> 0 จะใส่ "กำไล #n" ในข้อความ)
+bool lineTextForEvent(const char* ev, time_t ts, const char* d, time_t now, uint8_t node,
+                      char* out, int outLen);
